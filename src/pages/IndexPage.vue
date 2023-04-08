@@ -1,17 +1,23 @@
 <template>
-  <q-page class="flex flex-center">
-    <q-card class="q-pa-md">
-      <q-card-section>
-        <div class="text-h5">Hello World!</div>
-      </q-card-section>
-    </q-card>
+  <q-page>
+    <!-- <div>answer: {{ lastAiMessage }}</div> -->
+    <div class="q-pa-md">
+      <chat-component :received-messages="receivedMessages" />
+    </div>
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import { ref, computed } from "vue";
+import ChatComponent from "/src/components/ChatComponent.vue";
+import { useMessageStore } from "stores/message-store";
+import { storeToRefs } from "pinia";
 
-export default defineComponent({
-  name: 'IndexPage'
-})
+const messageStore = useMessageStore();
+const { message, receivedMessages } = storeToRefs(messageStore);
+
+const lastAiMessage = computed(() => {
+  const lastMessage = receivedMessages.value.slice(-1)[0];
+  return lastMessage?.isAi ? lastMessage.value : "";
+});
 </script>
