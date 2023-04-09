@@ -14,13 +14,22 @@ import { ref, computed } from "vue";
 import ChatComponent from "/src/components/ChatComponent.vue";
 import { useMessageStore } from "stores/message-store";
 import { storeToRefs } from "pinia";
-import { parse } from "papaparse";
+import { useConversationStore } from "stores/conversationStore";
 
 const messageStore = useMessageStore();
-const { message, receivedMessages, loading } = storeToRefs(messageStore);
+const conversationStore = useConversationStore();
 
-const lastAiMessage = computed(() => {
-  const lastMessage = receivedMessages.value.slice(-1)[0];
-  return lastMessage?.isAi ? lastMessage.value : "";
+const { message, loading } = storeToRefs(messageStore); // Remove receivedMessages from here
+
+const currentConversation = computed(() => {
+  return conversationStore.conversations[
+    conversationStore.currentConversationIndex
+  ];
+});
+
+const receivedMessages = computed(() => {
+  return conversationStore.conversations[
+    conversationStore.currentConversationIndex
+  ];
 });
 </script>

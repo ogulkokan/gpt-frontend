@@ -5,7 +5,7 @@
         <!-- <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /> -->
         <q-toolbar-title>
           <q-avatar>
-            <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg"> -->
+            <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" /> -->
           </q-avatar>
           <!-- Title -->
         </q-toolbar-title>
@@ -21,13 +21,32 @@
     >
       <q-scroll-area style="flex: 0 0 79%">
         <q-list>
-          <q-item-label header> Essential Links </q-item-label>
-
-          <EssentialLink
-            v-for="link in essentialLinks"
-            :key="link.title"
-            v-bind="link"
-          />
+          <!-- <q-item-label header> Essential Links </q-item-label> -->
+          <div class="column">
+            <div class="col q-pa-sm">
+              <q-btn
+                outline
+                align="left"
+                class="full-width"
+                label="New Chat"
+                icon="add"
+                @click="startNewChat"
+              />
+            </div>
+            <div
+              class="col q-pa-sm"
+              v-for="index in conversationIndices"
+              :key="index"
+            >
+              <q-btn
+                outline
+                align="left"
+                class="full-width"
+                :label="'Conversation ' + (index + 1)"
+                @click="loadConversation(index)"
+              />
+            </div>
+          </div>
         </q-list>
       </q-scroll-area>
       <q-separator />
@@ -86,23 +105,6 @@
           </q-expansion-item>
 
           <q-separator />
-
-          <q-expansion-item
-            group="somegroup"
-            icon="bluetooth"
-            label="Fourth"
-            header-class="bg-teal text-white"
-            expand-icon-class="text-white"
-          >
-            <q-card class="bg-teal-2">
-              <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
         </q-list>
       </div>
     </q-drawer>
@@ -135,39 +137,17 @@
 
 <script setup>
 import { ref, computed, provide } from "vue";
-import EssentialLink from "components/EssentialLink.vue";
 import SettingsDrawer from "components/SettingsDrawer.vue";
 import PromptComponent from "src/components/PromptComponent.vue";
 import { useQuasar } from "quasar";
 import { useMessageStore } from "stores/message-store";
-import { useCounterStore } from "stores/example-store";
-const counterStore = useCounterStore();
+import { useConversationStore } from "stores/conversationStore";
+const conversationStore = useConversationStore();
 const $q = useQuasar();
 
 const footerClass = computed(() => {
   return $q.dark.isActive ? "footer--dark" : "footer--light";
 });
-
-const essentialLinks = [
-  {
-    title: "Docs",
-    caption: "quasar.dev",
-    icon: "school",
-    link: "https://quasar.dev",
-  },
-  {
-    title: "Github",
-    caption: "github.com/quasarframework",
-    icon: "code",
-    link: "https://github.com/quasarframework",
-  },
-  {
-    title: "Discord Chat Channel",
-    caption: "chat.quasar.dev",
-    icon: "chat",
-    link: "https://chat.quasar.dev",
-  },
-];
 
 const leftDrawerOpen = ref(true);
 const rightDrawerOpen = ref(false);
@@ -179,20 +159,41 @@ const toggleRightDrawer = () => {
 const message = ref("");
 const inputMessage = ref("");
 
-// const emitMessageSent = (message) => {
-//   app.onMessageSent?.(message);
-// };
-// provide("emitMessageSent", emitMessageSent);
-
-// const sendMessage = () => {
-//   console.log("message sent: ", message.value);
-//   app.emit("message-sent", message.value);
-// };
-
 const messageStore = useMessageStore();
-function onMessageSent() {
+
+async function onMessageSent() {
   messageStore.setMessage(message.value);
-  messageStore.sendMessage(message.value);
   message.value = "";
+  await messageStore.sendMessage(messageStore.message);
+  conversationStore.addToConversation(
+    { isAi: false, value: messageStore.message },
+    conversationStore.currentConversationIndex
+  );
+  conversationStore.addToConversation(
+    {
+      isAi: true,
+      value:
+        messageStore.receivedMessages[messageStore.receivedMessages.length - 1]
+          .value,
+    },
+    conversationStore.currentConversationIndex
+  );
+  messageStore.setMessage("");
+  console.log(conversationStore.conversation);
+}
+
+function loadConversation(index) {
+  console.log("clicked conversation", index);
+  conversationStore.setCurrentConversationIndex(index);
+  // Logic to load the conversation based on the index
+}
+const conversationIndices = computed(() => {
+  return Array.from(
+    { length: conversationStore.conversationCount },
+    (_, i) => i
+  );
+});
+function startNewChat() {
+  conversationStore.startNewConversation();
 }
 </script>

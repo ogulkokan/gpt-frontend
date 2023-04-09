@@ -1,9 +1,13 @@
 <template>
   <div>
-    <q-list bordered separator v-for="(row, index) in results" :key="index">
+    <q-list
+      bordered
+      separator
+      v-for="(row, index) in promptStore.results"
+      :key="index"
+    >
       <q-item clickable v-ripple @click="showDialog(index)">
         <q-item-section>{{ row[0] }}</q-item-section>
-        <!-- <q-item-section caption>{{ row[1] }}</q-item-section> -->
       </q-item>
     </q-list>
     <q-dialog v-model="dialogVisible">
@@ -26,34 +30,18 @@
 
 <script setup>
 import { ref } from "vue";
-import { parse } from "papaparse";
+import { usePromptStore } from "stores/prompStore";
 
 const results = ref([]);
 const dialogVisible = ref(false);
 const selectedRow = ref([]);
+const promptStore = usePromptStore();
 
 function showDialog(index) {
-  selectedRow.value = results.value[index];
+  selectedRow.value = promptStore.results[index];
   dialogVisible.value = true;
 }
 
-async function fetchAndParseCSV() {
-  try {
-    const response = await fetch("http://localhost:8000/prompts.csv");
-    const csvText = await response.text();
-
-    parse(csvText, {
-      complete: (parsedResults) => {
-        results.value = parsedResults.data;
-      },
-      error: (error) => {
-        console.error("Error while parsing CSV:", error);
-      },
-    });
-  } catch (error) {
-    console.error("Error while fetching CSV:", error);
-  }
-}
-
-fetchAndParseCSV();
+// Call fetchAndParseCSV from the promptStore instead of a local function
+promptStore.fetchAndParseCSV();
 </script>
