@@ -14,6 +14,7 @@ import { ref, computed } from "vue";
 import ChatComponent from "/src/components/ChatComponent.vue";
 import { useMessageStore } from "stores/message-store";
 import { storeToRefs } from "pinia";
+import { parse } from "papaparse";
 
 const messageStore = useMessageStore();
 const { message, receivedMessages, loading } = storeToRefs(messageStore);
