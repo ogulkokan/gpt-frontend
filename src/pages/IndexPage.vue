@@ -1,8 +1,10 @@
 <template>
   <q-page>
-    <!-- <div>answer: {{ lastAiMessage }}</div> -->
-    <div class="q-pa-md">
-      <chat-component :received-messages="receivedMessages" />
+    <div class="row justify-center">
+      <chat-component
+        :received-messages="receivedMessages"
+        :loading="loading"
+      />
     </div>
   </q-page>
 </template>
@@ -14,7 +16,7 @@ import { useMessageStore } from "stores/message-store";
 import { storeToRefs } from "pinia";
 
 const messageStore = useMessageStore();
-const { message, receivedMessages } = storeToRefs(messageStore);
+const { message, receivedMessages, loading } = storeToRefs(messageStore);
 
 const lastAiMessage = computed(() => {
   const lastMessage = receivedMessages.value.slice(-1)[0];

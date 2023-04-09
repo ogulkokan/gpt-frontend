@@ -19,7 +19,7 @@
       class="drawer--left"
       style="display: flex; flex-direction: column; height: 100%"
     >
-      <q-scroll-area style="flex: 0 0 79%; max-width: 300px">
+      <q-scroll-area style="flex: 0 0 79%">
         <q-list>
           <q-item-label header> Essential Links </q-item-label>
 

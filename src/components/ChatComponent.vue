@@ -5,7 +5,27 @@
       :key="i"
       :class="messageClass(chat)"
     >
-      <div class="message-content">{{ chat.value }}</div>
+      <q-avatar v-if="chat.isAi" class="avatar">
+        <img src="https://cdn.quasar.dev/img/avatar.png" />
+      </q-avatar>
+      <div class="message-content">
+        <template v-if="chat.isAi">
+          <div v-if="!loading || i !== receivedMessages.length - 1">
+            {{ chat.value }}
+          </div>
+          <q-spinner-hourglass
+            v-if="loading && i === receivedMessages.length - 1 && chat.isAi"
+            color="primary"
+            size="2em"
+          />
+        </template>
+        <template v-else>
+          {{ chat.value }}
+        </template>
+      </div>
+      <q-avatar v-if="!chat.isAi" class="avatar">
+        <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
+      </q-avatar>
     </div>
   </q-scroll-area>
 </template>
@@ -18,6 +38,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  loading: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const messageClass = (chat) => {
@@ -27,6 +51,7 @@ const messageClass = (chat) => {
   };
 };
 </script>
+
 <style lang="scss" scoped>
 .scroll-area {
   height: 55vw;
@@ -50,5 +75,9 @@ const messageClass = (chat) => {
   margin: 5px;
   background-color: #eee;
   color: #333;
+}
+
+.avatar {
+  margin: 5px;
 }
 </style>
