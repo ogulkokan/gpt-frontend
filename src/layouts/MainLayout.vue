@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh lpR lFf">
-    <q-header class="bg-grey-8 text-white">
+    <q-header class="text-white">
       <q-toolbar>
         <!-- <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /> -->
         <q-toolbar-title>
@@ -9,6 +9,7 @@
           </q-avatar>
           <!-- Title -->
         </q-toolbar-title>
+        <div class="text-center q-px-xl">Model: Default (GPT-3.5)</div>
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
@@ -54,16 +55,21 @@
       <SettingsDrawer style="flex: 0 0 20%" />
     </q-drawer>
 
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right">
+    <q-drawer
+      show-if-above
+      v-model="rightDrawerOpen"
+      side="right"
+      class="drawer--left"
+    >
       <!-- drawer content -->
       <div style="max-width: 350px">
-        <q-list bordered>
+        <q-list>
           <q-expansion-item
             group="somegroup"
             icon="explore"
             label="Prompt Store"
             default-opened
-            header-class="bg-teal text-white"
+            header-class="bg-blue-grey-10 text-white"
           >
             <PromptComponent />
           </q-expansion-item>
@@ -72,11 +78,11 @@
 
           <q-expansion-item
             group="somegroup"
-            icon="perm_identity"
-            label="Prompt Store"
-            header-class="bg-teal text-white"
+            icon="settings"
+            label="Model Settings"
+            header-class="bg-blue-grey-10 text-white"
           >
-            <q-card>
+            <q-card class="text-black">
               <q-card-section>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
@@ -87,22 +93,6 @@
           </q-expansion-item>
 
           <q-separator />
-
-          <q-expansion-item
-            group="somegroup"
-            icon="shopping_cart"
-            label="Third"
-            header-class="text-purple"
-          >
-            <q-card>
-              <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
 
           <q-separator />
         </q-list>

@@ -32,7 +32,6 @@
 import { ref } from "vue";
 import { usePromptStore } from "stores/prompStore";
 
-const results = ref([]);
 const dialogVisible = ref(false);
 const selectedRow = ref([]);
 const promptStore = usePromptStore();
