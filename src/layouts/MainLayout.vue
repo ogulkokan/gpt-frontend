@@ -31,6 +31,7 @@
                 class="full-width"
                 label="New Chat"
                 icon="add"
+                :disable="loading"
                 @click="startNewChat"
               />
             </div>
@@ -39,13 +40,34 @@
               v-for="index in conversationIndices"
               :key="index"
             >
-              <q-btn
-                outline
-                align="left"
-                class="full-width"
-                :label="'Conversation ' + (index + 1)"
-                @click="loadConversation(index)"
-              />
+              <q-banner
+                inline-actions
+                rounded
+                class="text-white cursor-pointer"
+                :class="
+                  conversationStore.currentConversationIndex === index
+                    ? 'bg-grey-8'
+                    : 'bg-grey-10'
+                "
+                :disable="loading"
+                @click="!loading && loadConversation(index)"
+              >
+                <!-- You have lost connection to the internet. This app is offline. -->
+                <q-icon name="chat" style="font-size: 1.7em" class="q-pr-md" />
+                <span class="text-bold text-body1">
+                  {{ "Conversation " + (index + 1) }}
+                </span>
+                <q-btn
+                  v-if="conversationStore.currentConversationIndex === index"
+                  dense
+                  flat
+                  round
+                  icon="delete"
+                  class="q-ml-xl"
+                  :disable="loading"
+                  @click="deleteConversation(index)"
+                />
+              </q-banner>
             </div>
           </div>
         </q-list>
@@ -148,34 +170,47 @@ const toggleRightDrawer = () => {
 
 const message = ref("");
 const inputMessage = ref("");
+const loading = ref(false);
 
 const messageStore = useMessageStore();
 
 async function onMessageSent() {
   messageStore.setMessage(message.value);
+
+  // Show the user message immediately
+  conversationStore.addToConversation({
+    isAi: false,
+    value: messageStore.message,
+  });
+
+  // Show the AI loading message immediately
+  conversationStore.addToConversation({
+    isAi: true,
+    value: "Loading...",
+    isLoading: true,
+  });
+
   message.value = "";
-  await messageStore.sendMessage(messageStore.message);
-  conversationStore.addToConversation(
-    { isAi: false, value: messageStore.message },
-    conversationStore.currentConversationIndex
-  );
-  conversationStore.addToConversation(
-    {
-      isAi: true,
-      value:
-        messageStore.receivedMessages[messageStore.receivedMessages.length - 1]
-          .value,
-    },
-    conversationStore.currentConversationIndex
-  );
+  loading.value = true;
+
+  const response = await messageStore.sendMessage(messageStore.message);
+
+  // Update the AI response and remove the loading state
+  conversationStore.updateAIResponse(response);
   messageStore.setMessage("");
-  console.log(conversationStore.conversation);
+  loading.value = false;
+  console.log(
+    conversationStore.conversations[conversationStore.currentConversationIndex]
+  );
+}
+
+function deleteConversation(index) {
+  conversationStore.deleteConversation(index);
 }
 
 function loadConversation(index) {
-  console.log("clicked conversation", index);
+  conversationStore.saveConversationsToLocalStorage();
   conversationStore.setCurrentConversationIndex(index);
-  // Logic to load the conversation based on the index
 }
 const conversationIndices = computed(() => {
   return Array.from(

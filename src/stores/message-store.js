@@ -5,7 +5,8 @@ import { Api } from "../boot/axios";
 export const useMessageStore = defineStore("message", {
   state: () => ({
     message: "",
-    receivedMessages: [],
+    receivedMessages:
+      JSON.parse(localStorage.getItem("receivedMessages")) || [],
     conversation: [],
     loading: false,
   }),
@@ -18,6 +19,12 @@ export const useMessageStore = defineStore("message", {
     },
     setLoading(value) {
       this.loading = value;
+    },
+    saveReceivedMessagesToLocalStorage() {
+      localStorage.setItem(
+        "receivedMessages",
+        JSON.stringify(this.receivedMessages)
+      );
     },
     async sendMessage(message) {
       this.receivedMessages.push({ isAi: false, value: message });
@@ -33,11 +40,13 @@ export const useMessageStore = defineStore("message", {
         const answer = data.bot.trim();
         const answerMessage = { isAi: true, value: answer };
         this.receivedMessages.splice(loadingMessageIndex, 1, answerMessage);
+        return answer; // Add this line to return the answer
       } catch (error) {
         console.error(error);
       } finally {
         this.setLoading(false);
       }
+      this.saveReceivedMessagesToLocalStorage();
     },
   },
 });
