@@ -1,10 +1,7 @@
 <template>
   <q-page>
     <div class="row justify-center">
-      <chat-component
-        :received-messages="receivedMessages"
-        :loading="loading"
-      />
+      <ChatComponent :received-messages="receivedMessages" :loading="loading" />
     </div>
   </q-page>
 </template>

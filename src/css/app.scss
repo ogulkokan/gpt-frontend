@@ -2,7 +2,6 @@
 .drawer--left {
   background-color: #212121; /* Set a fixed background color for the left drawer */
   color: white; /* Set a fixed text color for the left drawer */
-  // max-width: 260px;
 }
 
 .body--light {
@@ -16,12 +15,3 @@
 .footer--dark {
   background-color: #343541; // Set your desired dark mode footer background color
 }
-
-// /* Apply styles based on the body classes */
-// .body--light .q-drawer--left {
-//   background-color: #f5f5f5; /* Set a fixed background color for the left drawer in light mode */
-// }
-
-// .body--dark .q-drawer--left {
-//   background-color: #333; /* Set a fixed background color for the left drawer in dark mode */
-// }

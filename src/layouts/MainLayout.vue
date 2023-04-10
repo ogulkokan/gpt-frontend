@@ -1,19 +1,15 @@
 <template>
-  <q-layout view="lHh lpR lFf">
+  <q-layout view="lHh lpR lFr">
     <q-header class="text-white">
       <q-toolbar>
-        <!-- <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /> -->
         <q-toolbar-title>
-          <q-avatar>
-            <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" /> -->
-          </q-avatar>
-          <!-- Title -->
+          <!-- <q-avatar> </q-avatar> -->
         </q-toolbar-title>
         <div class="text-center q-px-xl">Model: Default (GPT-3.5)</div>
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
-
+    <!-- left drawer content -->
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
@@ -22,7 +18,6 @@
     >
       <q-scroll-area style="flex: 0 0 79%">
         <q-list>
-          <!-- <q-item-label header> Essential Links </q-item-label> -->
           <div class="column">
             <div class="col q-pa-sm">
               <q-btn
@@ -35,40 +30,12 @@
                 @click="startNewChat"
               />
             </div>
-            <div
-              class="col q-pa-sm"
+            <ConversationComponent
               v-for="index in conversationIndices"
               :key="index"
-            >
-              <q-banner
-                inline-actions
-                rounded
-                class="text-white cursor-pointer"
-                :class="
-                  conversationStore.currentConversationIndex === index
-                    ? 'bg-grey-8'
-                    : 'bg-grey-10'
-                "
-                :disable="loading"
-                @click="!loading && loadConversation(index)"
-              >
-                <!-- You have lost connection to the internet. This app is offline. -->
-                <q-icon name="chat" style="font-size: 1.7em" class="q-pr-md" />
-                <span class="text-bold text-body1">
-                  {{ "Conversation " + (index + 1) }}
-                </span>
-                <q-btn
-                  v-if="conversationStore.currentConversationIndex === index"
-                  dense
-                  flat
-                  round
-                  icon="delete"
-                  class="q-ml-xl"
-                  :disable="loading"
-                  @click="deleteConversation(index)"
-                />
-              </q-banner>
-            </div>
+              :index="index"
+              :loading="loading"
+            />
           </div>
         </q-list>
       </q-scroll-area>
@@ -77,13 +44,13 @@
       <SettingsDrawer style="flex: 0 0 20%" />
     </q-drawer>
 
+    <!-- right drawer content -->
     <q-drawer
       show-if-above
       v-model="rightDrawerOpen"
       side="right"
       class="drawer--left"
     >
-      <!-- drawer content -->
       <div style="max-width: 350px">
         <q-list>
           <q-expansion-item
@@ -96,7 +63,7 @@
             <PromptComponent />
           </q-expansion-item>
 
-          <q-separator />
+          <!-- <q-separator /> -->
 
           <q-expansion-item
             group="somegroup"
@@ -113,9 +80,6 @@
               </q-card-section>
             </q-card>
           </q-expansion-item>
-
-          <q-separator />
-
           <q-separator />
         </q-list>
       </div>
@@ -151,6 +115,7 @@
 import { ref, computed, provide } from "vue";
 import SettingsDrawer from "components/SettingsDrawer.vue";
 import PromptComponent from "src/components/PromptComponent.vue";
+import ConversationComponent from "src/components/ConversationComponent.vue";
 import { useQuasar } from "quasar";
 import { useMessageStore } from "stores/message-store";
 import { useConversationStore } from "stores/conversationStore";

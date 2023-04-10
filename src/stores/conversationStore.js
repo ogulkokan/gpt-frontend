@@ -44,22 +44,50 @@ export const useConversationStore = defineStore("conversation", {
         this.conversations[this.currentConversationIndex] = [];
       }
 
-      this.conversations[this.currentConversationIndex].push({
-        isAi,
-        value,
-        isLoading,
-      });
+      // Create a new array with the new message
+      const updatedConversation = [
+        ...this.conversations[this.currentConversationIndex],
+        { isAi, value, isLoading },
+      ];
+
+      // Update the conversations array using the spread operator
+      this.conversations = [
+        ...this.conversations.slice(0, this.currentConversationIndex),
+        updatedConversation,
+        ...this.conversations.slice(this.currentConversationIndex + 1),
+      ];
+
       this.saveConversationsToLocalStorage();
     },
-
     updateAIResponse(response) {
       const currentConversation =
         this.conversations[this.currentConversationIndex];
-      const lastMessage = currentConversation[currentConversation.length - 1];
+      const lastMessageIndex = currentConversation.length - 1;
+      const lastMessage = currentConversation[lastMessageIndex];
 
       if (lastMessage.isAi && lastMessage.isLoading) {
-        lastMessage.value = response;
-        lastMessage.isLoading = false;
+        // Create a new message object with the updated values
+        const updatedMessage = {
+          ...lastMessage,
+          value: response,
+          isLoading: false,
+        };
+
+        // Create a new array with the updated message
+        const updatedConversation = [
+          ...currentConversation.slice(0, lastMessageIndex),
+          updatedMessage,
+          ...currentConversation.slice(lastMessageIndex + 1),
+        ];
+
+        // Update the conversations array using the spread operator
+        this.conversations = [
+          ...this.conversations.slice(0, this.currentConversationIndex),
+          updatedConversation,
+          ...this.conversations.slice(this.currentConversationIndex + 1),
+        ];
+
+        this.saveConversationsToLocalStorage();
       }
     },
 
