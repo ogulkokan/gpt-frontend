@@ -8,16 +8,12 @@ export const useConversationStore = defineStore("conversation", {
     currentConversationIndex: 0,
   }),
   getters: {
-    conversationCount() {
+    totalConversations() {
       return this.conversations.length;
     },
   },
   actions: {
-    // addToConversation(message) {
-    //   this.conversation.push(message);
-    // },
     incrementConversationCount() {
-      // Add this method
       this.conversationCount++;
     },
     clearConversation() {
@@ -98,6 +94,11 @@ export const useConversationStore = defineStore("conversation", {
     },
     setCurrentConversationIndex(index) {
       this.currentConversationIndex = index;
+    },
+    clearAllConversations() {
+      this.conversations = [[]];
+      this.currentConversationIndex = 0;
+      this.saveConversationsToLocalStorage();
     },
   },
 });

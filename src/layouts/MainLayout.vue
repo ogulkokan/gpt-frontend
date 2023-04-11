@@ -1,22 +1,36 @@
 <template>
   <q-layout view="lHh lpR lFr">
-    <q-header class="text-white">
-      <q-toolbar>
-        <q-toolbar-title>
-          <!-- <q-avatar> </q-avatar> -->
-        </q-toolbar-title>
-        <!-- <div class="text-center q-px-xl">Model: Default (GPT-3.5)</div> -->
-        <!-- <div class="text-center q-px-xl">{{ selectedModel }}</div> -->
-        <q-select
-          filled
-          v-model="selectedModel"
-          :options="options"
-          label="Selected Model:"
-          class="text-center q-px-md"
-          @update:model-value="setSelectedModel2(selectedModel)"
-        />
-        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
-      </q-toolbar>
+    <q-header>
+      <q-banner
+        inline-actions
+        class="text-white"
+        style="background-color: #40414f"
+      >
+        <div class="row justify-center">
+          <q-select
+            standout
+            dense
+            v-model="selectedModel"
+            :options="options"
+            label="Selected Model:"
+            class="q-px-md"
+            bg-color="grey-7"
+            color="orange"
+            style="width: 250px"
+            @update:model-value="updateSelectedModel"
+          />
+        </div>
+        <template v-slot:action>
+          <q-btn
+            class="align-right"
+            dense
+            flat
+            round
+            icon="menu"
+            @click="toggleRightDrawer"
+          />
+        </template>
+      </q-banner>
     </q-header>
     <!-- left drawer content -->
     <q-drawer
@@ -50,7 +64,7 @@
       </q-scroll-area>
       <q-separator />
 
-      <SettingsDrawer style="flex: 0 0 20%" />
+      <SettingsComponent style="flex: 0 0 20%" />
     </q-drawer>
 
     <!-- right drawer content -->
@@ -127,52 +141,44 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
-import SettingsDrawer from "components/SettingsDrawer.vue";
+import { ref, computed } from "vue";
+import SettingsComponent from "components/SettingsComponent.vue";
 import PromptComponent from "src/components/PromptComponent.vue";
 import ConversationComponent from "src/components/ConversationComponent.vue";
 import { useQuasar } from "quasar";
-import { useMessageStore } from "stores/message-store";
+import { useMessageStore } from "src/stores/messageStore";
 import { useConversationStore } from "stores/conversationStore";
-
-// Import the model store
 import { useModelStore } from "stores/modelStore";
 
-const selectedModel = ref("gpt-4");
+const $q = useQuasar();
+
+const modelStore = useModelStore();
+const conversationStore = useConversationStore();
+const messageStore = useMessageStore();
 
 const options = computed(() => modelStore.models);
+const selectedModel = ref(options.value[0]);
 
-async function setSelectedModel2(model) {
-  // await nextTick();
+const leftDrawerOpen = ref(true);
+const rightDrawerOpen = ref(false);
+const message = ref("");
+const loading = ref(false);
+
+async function updateSelectedModel(model) {
   console.log("selected model: ", model);
+  selectedModel.value = model;
   modelStore.setSelectedModel(model);
 }
-
-// Initialize the store
-const modelStore = useModelStore();
-
-const conversationStore = useConversationStore();
-const $q = useQuasar();
 
 const footerClass = computed(() => {
   return $q.dark.isActive ? "footer--dark" : "footer--light";
 });
 
-const leftDrawerOpen = ref(true);
-const rightDrawerOpen = ref(false);
-
 const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value;
 };
 
-const message = ref("");
-const inputMessage = ref("");
-const loading = ref(false);
-
-const messageStore = useMessageStore();
-
 async function onMessageSent(model) {
-  console.log("selected model onMessageSent: ", model);
   messageStore.setMessage(message.value);
 
   // Show the user message immediately
@@ -198,38 +204,27 @@ async function onMessageSent(model) {
   conversationStore.updateAIResponse(response);
   messageStore.setMessage("");
   loading.value = false;
-  console.log(
-    conversationStore.conversations[conversationStore.currentConversationIndex]
-  );
+  // console.log(
+  //   conversationStore.conversations[conversationStore.currentConversationIndex]
+  // );
 }
 
-function deleteConversation(index) {
-  conversationStore.deleteConversation(index);
-}
-
-function loadConversation(index) {
-  conversationStore.saveConversationsToLocalStorage();
-  conversationStore.setCurrentConversationIndex(index);
-}
 const conversationIndices = computed(() => {
   return Array.from(
-    { length: conversationStore.conversationCount },
+    { length: conversationStore.totalConversations },
     (_, i) => i
   );
 });
+
 function startNewChat() {
   conversationStore.startNewConversation();
 }
-async function sendMessageWithSelectedModel() {
-  // const model = modelStore.getModelByName(selectedModel.value);
-  await onMessageSent(selectedModel.value);
-}
 
-// onMounted(async () => {
-//   await modelStore.fetchModels();
-//   console.log("models", modelStore.models);
-//   if (modelStore.models.length > 0) {
-//     selectedModel.value = modelStore.models[0].name;
-//   }
-// });
+async function sendMessageWithSelectedModel() {
+  if (selectedModel.value) {
+    await onMessageSent(selectedModel.value);
+  } else {
+    console.error("Selected model is undefined.");
+  }
+}
 </script>

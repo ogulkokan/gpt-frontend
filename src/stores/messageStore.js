@@ -27,28 +27,24 @@ export const useMessageStore = defineStore("message", {
       );
     },
     async sendMessage(message, model) {
-      console.log("selected model:", model);
       const payload = {
         content: message,
         model: model,
       };
 
-      console.log("Request payload:", payload);
       this.receivedMessages.push({ isAi: false, value: message });
 
       const loadingMessageIndex = this.receivedMessages.length;
       const loadingMessage = { isAi: true, value: "Loading..." };
       this.receivedMessages.push(loadingMessage);
 
-      // Save the conversation after adding the loading message
       this.saveReceivedMessagesToLocalStorage();
 
       try {
-        console.log("selected model:", model);
         this.setLoading(true);
         const res = await Api.post("/api/ask", payload);
         const data = res.data;
-        console.log("Response data:", data);
+        // console.log("Response data:", res);
         const answer = data.bot.trim();
         const answerMessage = { isAi: true, value: answer };
         // Create a new array with the updated answer message using the spread operator
@@ -59,12 +55,9 @@ export const useMessageStore = defineStore("message", {
         ];
         // Assign the updated array to receivedMessages to trigger reactivity
         this.receivedMessages = updatedReceivedMessages;
-        // await this.$nextTick();
 
-        // this.receivedMessages.splice(loadingMessageIndex, 1, answerMessage);
-        // Save the conversation after adding the answer message
         this.saveReceivedMessagesToLocalStorage();
-        return answer; // Add this line to return the answer
+        return answer;
       } catch (error) {
         console.error(error);
       } finally {

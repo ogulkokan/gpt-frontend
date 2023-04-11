@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { Api } from "../boot/axios";
+// import { ref } from "vue";
 
 export const useModelStore = defineStore("model", {
   state: () => ({
@@ -23,14 +24,16 @@ export const useModelStore = defineStore("model", {
         this.setLoading(false);
       }
     },
-    // setSelectedModel(modelId) {
-    //   this.selectedModel = modelId;
-    // },
     setSelectedModel(model) {
       this.selectedModel = model;
     },
     getModelByName(modelName) {
       return this.models.find((model) => model.name === modelName);
+    },
+  },
+  getters: {
+    options() {
+      return this.models;
     },
   },
 });
