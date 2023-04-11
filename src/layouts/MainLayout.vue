@@ -89,14 +89,7 @@
             label="Model Settings"
             header-class="bg-blue-grey-10 text-white"
           >
-            <q-card class="text-black">
-              <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
-              </q-card-section>
-            </q-card>
+            <ModelSettingsComponent />
           </q-expansion-item>
           <q-separator />
         </q-list>
@@ -140,16 +133,19 @@ import { ref, computed } from "vue";
 import SettingsComponent from "components/SettingsComponent.vue";
 import PromptComponent from "src/components/PromptComponent.vue";
 import ConversationComponent from "src/components/ConversationComponent.vue";
+import ModelSettingsComponent from "src/components/ModelSettingsComponent.vue";
 import { useQuasar } from "quasar";
 import { useMessageStore } from "src/stores/messageStore";
 import { useConversationStore } from "stores/conversationStore";
 import { useModelStore } from "stores/modelStore";
+import { useModelSettingsStore } from "stores/modelSettingsStore";
 
 const $q = useQuasar();
 
 const modelStore = useModelStore();
 const conversationStore = useConversationStore();
 const messageStore = useMessageStore();
+const modelSettingsStore = useModelSettingsStore();
 
 const options = computed(() => modelStore.models);
 const selectedModel = ref(options.value[0]);
