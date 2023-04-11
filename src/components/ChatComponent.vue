@@ -54,7 +54,8 @@ const messageClass = (chat) => {
 
 <style lang="scss" scoped>
 .scroll-area {
-  height: 55vw;
+  height: 75vw;
+  max-height: 85vh;
   width: 100%;
 }
 

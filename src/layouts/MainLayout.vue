@@ -32,14 +32,10 @@
         </template>
       </q-banner>
     </q-header>
+
     <!-- left drawer content -->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      class="drawer--left"
-      style="display: flex; flex-direction: column; height: 100%"
-    >
-      <q-scroll-area style="flex: 0 0 79%">
+    <q-drawer v-model="leftDrawerOpen" show-if-above class="drawer--left">
+      <q-scroll-area style="height: 80vh; max-width: 300px">
         <q-list>
           <div class="column">
             <div class="col q-pa-sm">
@@ -63,8 +59,7 @@
         </q-list>
       </q-scroll-area>
       <q-separator />
-
-      <SettingsComponent style="flex: 0 0 20%" />
+      <SettingsComponent style="height: 19vh; max-width: 300px" />
     </q-drawer>
 
     <!-- right drawer content -->

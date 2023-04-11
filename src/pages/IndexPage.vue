@@ -1,7 +1,12 @@
 <template>
   <q-page>
     <div class="row justify-center">
-      <ChatComponent :received-messages="receivedMessages" :loading="loading" />
+      <div class="col-xl-6 col-lg-10 col-md-12 col-sm-12 col-xs-12">
+        <ChatComponent
+          :received-messages="receivedMessages"
+          :loading="loading"
+        />
+      </div>
     </div>
   </q-page>
 </template>
@@ -30,3 +35,8 @@ const receivedMessages = computed(() => {
   return conversation ? conversation : [];
 });
 </script>
+<style scoped>
+.full-height {
+  height: 70vh;
+}
+</style>

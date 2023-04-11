@@ -1,6 +1,7 @@
 <template>
-  <div class="col q-pa-sm">
+  <div class="col q-pt-xs">
     <q-banner
+      no-wrap
       inline-actions
       rounded
       class="text-white cursor-pointer"
@@ -11,20 +12,22 @@
       :disable="loading"
       @click="!loading && loadConversation(index)"
     >
-      <q-icon name="chat" style="font-size: 1.7em" class="q-pr-md" />
-      <span class="text-bold text-body1">
-        {{ "Conversation " + (index + 1) }}
-      </span>
-      <q-btn
-        v-if="isSelected"
-        dense
-        flat
-        round
-        icon="delete"
-        class="q-ml-xl"
-        :disable="loading"
-        @click="deleteConversation(index)"
-      />
+      <div class="row q-gutter-x-sm items-center">
+        <q-icon name="chat" style="font-size: 1.7em" />
+        <span class="text-bold text-body1">
+          {{ "Conversation " + (index + 1) }}
+        </span>
+        <q-space />
+        <q-btn
+          v-if="isSelected"
+          dense
+          flat
+          round
+          icon="delete"
+          :disable="loading"
+          @click="deleteConversation(index)"
+        />
+      </div>
     </q-banner>
   </div>
 </template>
