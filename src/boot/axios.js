@@ -15,6 +15,30 @@ const api = axios.create({
   },
 });
 
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    console.log("Request:", config);
+    return config;
+  },
+  (error) => {
+    console.error("Request error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => {
+    console.log("Response:", response);
+    return response;
+  },
+  (error) => {
+    console.error("Response error:", error);
+    return Promise.reject(error);
+  }
+);
+
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 

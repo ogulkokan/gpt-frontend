@@ -5,7 +5,16 @@
         <q-toolbar-title>
           <!-- <q-avatar> </q-avatar> -->
         </q-toolbar-title>
-        <div class="text-center q-px-xl">Model: Default (GPT-3.5)</div>
+        <!-- <div class="text-center q-px-xl">Model: Default (GPT-3.5)</div> -->
+        <!-- <div class="text-center q-px-xl">{{ selectedModel }}</div> -->
+        <q-select
+          filled
+          v-model="selectedModel"
+          :options="options"
+          label="Selected Model:"
+          class="text-center q-px-md"
+          @update:model-value="setSelectedModel2(selectedModel)"
+        />
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
@@ -99,10 +108,16 @@
             bg-color="blue-grey-7"
             v-model="message"
             placeholder="Send a message..."
-            @keyup.enter="onMessageSent"
+            @keyup.enter="sendMessageWithSelectedModel"
           >
             <template v-slot:append>
-              <q-btn round dense flat icon="send" @click="onMessageSent" />
+              <q-btn
+                round
+                dense
+                flat
+                icon="send"
+                @click="sendMessageWithSelectedModel"
+              />
             </template>
           </q-input>
         </div>
@@ -112,13 +127,30 @@
 </template>
 
 <script setup>
-import { ref, computed, provide } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import SettingsDrawer from "components/SettingsDrawer.vue";
 import PromptComponent from "src/components/PromptComponent.vue";
 import ConversationComponent from "src/components/ConversationComponent.vue";
 import { useQuasar } from "quasar";
 import { useMessageStore } from "stores/message-store";
 import { useConversationStore } from "stores/conversationStore";
+
+// Import the model store
+import { useModelStore } from "stores/modelStore";
+
+const selectedModel = ref("gpt-4");
+
+const options = computed(() => modelStore.models);
+
+async function setSelectedModel2(model) {
+  // await nextTick();
+  console.log("selected model: ", model);
+  modelStore.setSelectedModel(model);
+}
+
+// Initialize the store
+const modelStore = useModelStore();
+
 const conversationStore = useConversationStore();
 const $q = useQuasar();
 
@@ -139,7 +171,8 @@ const loading = ref(false);
 
 const messageStore = useMessageStore();
 
-async function onMessageSent() {
+async function onMessageSent(model) {
+  console.log("selected model onMessageSent: ", model);
   messageStore.setMessage(message.value);
 
   // Show the user message immediately
@@ -158,7 +191,8 @@ async function onMessageSent() {
   message.value = "";
   loading.value = true;
 
-  const response = await messageStore.sendMessage(messageStore.message);
+  // Pass the correct model parameter to sendMessage function
+  const response = await messageStore.sendMessage(messageStore.message, model);
 
   // Update the AI response and remove the loading state
   conversationStore.updateAIResponse(response);
@@ -186,4 +220,16 @@ const conversationIndices = computed(() => {
 function startNewChat() {
   conversationStore.startNewConversation();
 }
+async function sendMessageWithSelectedModel() {
+  // const model = modelStore.getModelByName(selectedModel.value);
+  await onMessageSent(selectedModel.value);
+}
+
+// onMounted(async () => {
+//   await modelStore.fetchModels();
+//   console.log("models", modelStore.models);
+//   if (modelStore.models.length > 0) {
+//     selectedModel.value = modelStore.models[0].name;
+//   }
+// });
 </script>

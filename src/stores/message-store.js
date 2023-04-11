@@ -26,7 +26,14 @@ export const useMessageStore = defineStore("message", {
         JSON.stringify(this.receivedMessages)
       );
     },
-    async sendMessage(message) {
+    async sendMessage(message, model) {
+      console.log("selected model:", model);
+      const payload = {
+        content: message,
+        model: model,
+      };
+
+      console.log("Request payload:", payload);
       this.receivedMessages.push({ isAi: false, value: message });
 
       const loadingMessageIndex = this.receivedMessages.length;
@@ -37,8 +44,9 @@ export const useMessageStore = defineStore("message", {
       this.saveReceivedMessagesToLocalStorage();
 
       try {
+        console.log("selected model:", model);
         this.setLoading(true);
-        const res = await Api.post("/api/ask", { content: message });
+        const res = await Api.post("/api/ask", payload);
         const data = res.data;
         console.log("Response data:", data);
         const answer = data.bot.trim();
