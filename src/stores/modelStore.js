@@ -5,7 +5,7 @@ import { Api } from "../boot/axios";
 export const useModelStore = defineStore("model", {
   state: () => ({
     models: ["gpt-4", "gpt-3.5-turbo"],
-    selectedModel: "",
+    selectedModel: "gpt-4",
     loading: false,
   }),
   actions: {

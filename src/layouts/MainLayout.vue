@@ -73,25 +73,20 @@
         <q-list>
           <q-expansion-item
             group="somegroup"
-            icon="explore"
-            label="Prompt Store"
-            default-opened
-            header-class="bg-blue-grey-10 text-white"
-          >
-            <PromptComponent />
-          </q-expansion-item>
-
-          <!-- <q-separator /> -->
-
-          <q-expansion-item
-            group="somegroup"
             icon="settings"
             label="Model Settings"
             header-class="bg-blue-grey-10 text-white"
           >
             <ModelSettingsComponent />
           </q-expansion-item>
-          <q-separator />
+          <q-expansion-item
+            group="somegroup"
+            icon="explore"
+            label="Prompt Store"
+            header-class="bg-blue-grey-10 text-white"
+          >
+            <PromptComponent />
+          </q-expansion-item>
         </q-list>
       </div>
     </q-drawer>

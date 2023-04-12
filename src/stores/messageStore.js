@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { Api } from "../boot/axios";
+import { useModelSettingsStore } from "./modelSettingsStore";
 
 export const useMessageStore = defineStore("message", {
   state: () => ({
@@ -27,9 +28,17 @@ export const useMessageStore = defineStore("message", {
       );
     },
     async sendMessage(message, model) {
+      const modelSettingsStore = useModelSettingsStore();
+      const settings = modelSettingsStore.settings;
+
       const payload = {
         content: message,
         model: model,
+        maxTokens: Number(settings.maxTokens),
+        temperature: parseFloat(settings.temperature),
+        topP: settings.topP,
+        frequencyPenalty: parseFloat(settings.frequencyPenalty),
+        presencePenalty: parseFloat(settings.presencePenalty),
       };
 
       this.receivedMessages.push({ isAi: false, value: message });
@@ -42,6 +51,7 @@ export const useMessageStore = defineStore("message", {
 
       try {
         this.setLoading(true);
+        console.log("Sending message payload last one!!!!!!:", payload);
         const res = await Api.post("/api/ask", payload);
         const data = res.data;
         // console.log("Response data:", res);

@@ -12,14 +12,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ChatComponent from "/src/components/ChatComponent.vue";
 import { useMessageStore } from "src/stores/messageStore";
 import { storeToRefs } from "pinia";
 import { useConversationStore } from "stores/conversationStore";
+import { useModelStore } from "stores/modelStore";
 
 const messageStore = useMessageStore();
 const conversationStore = useConversationStore();
+const modelStore = useModelStore();
 
 const { message, loading } = storeToRefs(messageStore);
 
@@ -33,6 +35,10 @@ const receivedMessages = computed(() => {
   const conversation =
     conversationStore.conversations[conversationStore.currentConversationIndex];
   return conversation ? conversation : [];
+});
+
+onMounted(() => {
+  // modelStore.fetchModels();
 });
 </script>
 <style scoped>
